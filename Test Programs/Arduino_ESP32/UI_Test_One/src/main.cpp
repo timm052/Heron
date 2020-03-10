@@ -40,7 +40,7 @@
 //U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ 13, /* data=*/ 11, /* reset=*/ 8);
 //U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ SCL, /* data=*/ SDA, /* reset=*/ U8X8_PIN_NONE);   // All Boards without Reset of the Display
 //U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ 16, /* data=*/ 17, /* reset=*/ U8X8_PIN_NONE);   // ESP32 Thing, pure SW emulated I2C
-U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);   // ESP32 Thing, HW I2C with pin remapping
+//U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);   // ESP32 Thing, HW I2C with pin remapping
 //U8G2_SSD1306_128X64_NONAME_F_6800 u8g2(U8G2_R0, 13, 11, 2, 3, 4, 5, 6, A4, /*enable=*/ 7, /*cs=*/ 10, /*dc=*/ 9, /*reset=*/ 8);
 //U8G2_SSD1306_128X64_NONAME_F_8080 u8g2(U8G2_R0, 13, 11, 2, 3, 4, 5, 6, A4, /*enable=*/ 7, /*cs=*/ 10, /*dc=*/ 9, /*reset=*/ 8);
 //U8G2_SSD1306_128X64_VCOMH0_F_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 10, /* dc=*/ 9, /* reset=*/ 8);	// same as the NONAME variant, but maximizes setContrast() range
@@ -238,15 +238,39 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* 
 
 // End of constructor list
 
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C OLED_1(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C OLED_2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
 
-void setup(void) {
-  u8g2.begin();
+void drawOLED_1(void) {
+  char buffer[10];
+  OLED_1.clearBuffer(); // clear the internal memory
+  OLED_1.setFont(u8g_font_6x10);
+  OLED_1.drawStr(25, 25, "Shrek Says");
+  OLED_1.sendBuffer(); // transfer internal memory to the display
 }
 
-void loop(void) {
-  u8g2.clearBuffer();					// clear the internal memory
-  u8g2.setFont(u8g2_font_10x20_me);	// choose a suitable font
-  u8g2.drawStr(25,35,"Shrek 5!");	// write something to the internal memory
-  u8g2.sendBuffer();					// transfer internal memory to the display
-  delay(1000);  
+void drawOLED_2(void) {
+  char buffer[10];
+  OLED_2.clearBuffer(); // clear the internal memory
+  OLED_2.setFont(u8g_font_6x10);
+  OLED_2.drawStr(10, 25, "'It's All Ogre Now'");
+  OLED_2.sendBuffer(); // transfer internal memory to the display
+}
+
+void setup() {
+  OLED_1.setI2CAddress(0x3C * 2);
+  OLED_2.setI2CAddress(0x3D * 2);
+  OLED_1.begin();
+  OLED_2.begin();
+  OLED_1.setFont(u8g_font_6x10);
+  OLED_2.setFont(u8g_font_6x10);
+}
+
+void loop() {
+  static unsigned long oledTimer = millis(); //every 1000ms update the oled display
+  if (millis() - oledTimer >= 1000) {
+    oledTimer = millis();
+    drawOLED_1();
+    drawOLED_2();
+  }
 }
