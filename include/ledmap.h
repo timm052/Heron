@@ -1,8 +1,9 @@
+//GENERAL BUTTONS
 //FUNCTIONS
-#define LED_FUNCTION 1
-#define LED_SEQUENCER 1
-#define LED_PATTERN 1
-#define LED_TRACK 1
+#define LED_FUNCTION 36
+#define LED_SEQUENCER 35
+#define LED_PATTERN 34
+#define LED_TRACK 35
 //MENUS
 #define LED_PLAY 28
 #define LED_REC 29

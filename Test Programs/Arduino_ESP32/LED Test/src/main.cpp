@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <ledmap.h>
+#include <palette.h>
 #include <Adafruit_NeoPixel.h>
 #define PIN 25
 #define NUMPIXELS 40
@@ -19,15 +20,15 @@ void loop() {
   // cycle through each led displaying a colour
   for (int i=0; i<NUMPIXELS; i++) {
 
-    pixels.setPixelColor(i, pixels.Color(0,150,0));
+    pixels.setPixelColor(i, GREEN);
     pixels.show();
     delay(DELAYVAL);
     pixels.clear();
-    pixels.setPixelColor(i, pixels.Color(150,0,0));
+    pixels.setPixelColor(i, RED);
     pixels.show();
     delay(DELAYVAL);
     pixels.clear();
-    pixels.setPixelColor(i, pixels.Color(0,0,150));
+    pixels.setPixelColor(i, BLUE);
     pixels.show();
   }
 }
