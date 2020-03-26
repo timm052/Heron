@@ -30,5 +30,6 @@ void loop() {
     pixels.clear();
     pixels.setPixelColor(i, BLUE);
     pixels.show();
+    delay(DELAYVAL);
   }
 }
