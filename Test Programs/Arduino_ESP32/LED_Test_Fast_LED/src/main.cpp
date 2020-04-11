@@ -15,7 +15,7 @@ void setup() {
 void loop() {
   // cycle through each led displaying a colour
   for (int i=0; i<NUM_LEDS; i++) {
-    leds[i] = CRGB::PowderBlue;
+    leds[i] = CRGB::Maroon;
     FastLED.show();
     leds[i] = CRGB::Black;
     delay(100);
