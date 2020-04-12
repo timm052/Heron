@@ -20,7 +20,7 @@
 */
 
 #define U8G2_16BIT
-U8G2_SSD1327_EA_W128128_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
+U8G2_SSD1327_MIDAS_128X128_F_HW_I2C u8g2(U8G2_R3, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
 //U8G2_SSD1306_128X64_NONAME_F_HW_I2C OLED_1(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
 //U8G2_SSD1306_128X64_NONAME_F_HW_I2C OLED_2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
 
@@ -86,7 +86,7 @@ void drawScrollString(int16_t offset, const char *s)
   
 
   u8g2.setDrawColor(0);		// clear the scrolling area
-  u8g2.drawBox(0, 49, u8g2.getDisplayWidth()-1, u8g2.getDisplayHeight()-1);
+  u8g2.drawBox(0, 49, u8g2.getDisplayWidth()+12, u8g2.getDisplayHeight()-1);
   u8g2.setDrawColor(1);		// set the color for the text
     
   
@@ -133,7 +133,7 @@ void draw(const char *s, uint8_t symbol, int degree)
     drawScrollString(offset, s);  			// no clearBuffer required, screen will be partially cleared here
     u8g2.sendBuffer();				// transfer internal memory to the display
 
-    delay(20);
+    delay(5);
     offset+=2;
     if ( offset > len*8+1 )
       break;
