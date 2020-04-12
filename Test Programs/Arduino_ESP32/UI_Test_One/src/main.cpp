@@ -19,7 +19,7 @@
     
 */
 
-#define U8G2_16BIT
+#define U8G2_16BIT // change to 16 bit mode for greyscale display
 U8G2_SSD1327_MIDAS_128X128_F_HW_I2C u8g2(U8G2_R3, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
 //U8G2_SSD1306_128X64_NONAME_F_HW_I2C OLED_1(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
 //U8G2_SSD1306_128X64_NONAME_F_HW_I2C OLED_2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
