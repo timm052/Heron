@@ -13,12 +13,12 @@ void setup() {
 }
 
 void loop() {
-  shiftOut(SOT, SerialClock, MSBFIRST,0b10101010);
+  shiftOut(SOT, SerialClock, MSBFIRST,0b1010101010101010);
   digitalWrite(RCK,HIGH);
   //delayMicroseconds(2);
   digitalWrite(RCK,LOW);
   delay(1000);
-  shiftOut(SOT, SerialClock, MSBFIRST,0b01010101);
+  shiftOut(SOT, SerialClock, MSBFIRST,0b0101010101010101);
   digitalWrite(RCK,HIGH);
   //delayMicroseconds(2);
   digitalWrite(RCK,LOW);
