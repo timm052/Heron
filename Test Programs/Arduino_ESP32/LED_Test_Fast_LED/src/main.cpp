@@ -9,7 +9,7 @@ CRGB leds[NUM_LEDS]; //create array to store LED buffer
 
 //FastLED Docs https://github.com/FastLED/FastLED/wiki/Controlling-leds
 void setup() {
-  FastLED.addLeds<WS2812B, DATA_PIN, RGB>(leds, NUM_LEDS); //Initalize LED type and number of leds  
+  FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS); //Initalize LED type and number of leds  
 }
 
 void loop() {
