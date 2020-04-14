@@ -3,7 +3,7 @@
 int SerialClock = 18; //Serial Clock
 int RCK = 5; //Register Clock
 int SOT = 23; //Serial Out
-
+unsigned int val = 0b1111111100000000;
 
 
 void setup() {
@@ -14,7 +14,7 @@ void setup() {
 }
 
 void loop() {
-  shiftOut(SOT, SerialClock, MSBFIRST,0b1111111100000000);
+  shiftOut(SOT, SerialClock, MSBFIRST,val);
   digitalWrite(RCK,HIGH);
   //delayMicroseconds(2);
   digitalWrite(RCK,LOW);
