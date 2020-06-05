@@ -1,36 +1,37 @@
 // USEFUL LED FUNCTIONS
 
 
-void momentaryLED(adress, time, colour){
-
+void momentaryLED(int address, int time,  int colour){
+    return;
 }
 
-void Cursor(speed, colour, length){
-
+void Cursor(int range_stat, int range_stop, int bpm, int colour){
+    return;
 }
 
-void toggleLED(adress, state, colour){
-
+void toggleLED(int address, int state, int colour){
+    return;
 }
 
-void knobLED(value, colour,){
-
+void knobLED(int range_stat, int range_stop, int value, int colour){
+    return;
 }
 
-void colouraddition (colour1, colour2){
-
+int colouraddition (int colour1, int colour2){
+    return;
 }
 
 void dumbmodes (){
-
+    return;
 }
 
-void palettechange (){
-
+void palettechange (string palette){
+    myPal = palette;
+    return;
 }
 
 void brightness (){
-    
+    return;    
 }
 
 
