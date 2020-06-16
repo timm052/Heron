@@ -13,6 +13,14 @@
 //Globals
 CRGB leds[NUM_LEDS];
 CRGBPalette16 myPal = gr59_hult_gp;
+int bpm = 125;
+
+// TODO determine final set of globals
+// list of potential globals
+// 6 * 4 MIDI CC values
+// Array to track if any changes are made to LED's
+// Array of LED colour states
+
 
 
 void setup() {
