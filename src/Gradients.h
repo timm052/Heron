@@ -1,14 +1,4 @@
-#include <Arduino.h>
-#include <ledmap.h>
-#include <FastLED.h>
-#define DATA_PIN 25
-#define NUM_LEDS 40
-CRGB leds[NUM_LEDS]; //create array to store LED buffer
-// Gradient palette "gr59_hult_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/hult/tn/gr59_hult.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Size: 60 bytes of program space.
-
+//store all gradients here only used gradients will be included in mem
 DEFINE_GRADIENT_PALETTE( gr59_hult_gp ) {
     0, 203, 24, 17,
    20, 199, 55, 45,
@@ -116,27 +106,3 @@ DEFINE_GRADIENT_PALETTE( cw2_079_gp ) {
     0,  24, 55,  1,
   127, 244,122,  6,
   255, 222, 36, 22};
-
-
-
-
-
-  CRGBPalette256 myPal = cw2_079_gp; 
-
-
-
-
-//FastLED Docs https://github.com/FastLED/FastLED/wiki/Controlling-leds
-void setup() {
-  FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS); //Initalize LED type and number of leds 
-}
-
-void loop() {
-  // cycle through each led displaying a colour
-  for (int i=0; i<NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette( myPal, i*6);
-    leds[i].fadeLightBy( 200 ); //LED Bright
-    FastLED.show();
-    delay(100);
-  }
-}
