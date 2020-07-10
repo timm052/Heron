@@ -7,7 +7,7 @@ bool buttonFlag = 0; //Flag is set whenever a button is pressed - used for optim
 #define TRACKS 2 // Max number of tracks - NOT USED ATM
 #define MAXSTEPS 3 // Max number of steps
 
-//Testing pins
+// Testing pins
 #define LED_PIN1 18 // LED 1 of selected steps
 #define LED_PIN2 5 // LED 2 """
 #define LED_PIN3 17 // LED 3 """
@@ -20,6 +20,14 @@ bool buttonFlag = 0; //Flag is set whenever a button is pressed - used for optim
 #define BUT_PIN3 15 // Button 3 """
 
 
+// Function Prototypes
+void stepCheck(void * parameter); 
+void timerTask(void * parameter);
+
+
+// These point to freeRTOS tasks
+TaskHandle_t stepHandle = NULL; // 'TaskHandle_t' objects are the way tasks are identified (I think). Will give this to 'xTaskCreate' below.
+TaskHandle_t timerHandle = NULL;
 
 
 // Each step of a track is one of these objects
@@ -46,18 +54,10 @@ int LEDt[3] = {LED_PIN4, LED_PIN5, LED_PIN6};
 // Interrupt for timer - is called when timer reaches set interval
 void IRAM_ATTR onTimer()
 {
-  digitalWrite(LEDt[step], LOW); // Turn the previous LED off
   if(step >= stepSize) // If step has reached the end of sequence
   {step = 0;} // Reset step back to start
   else
   {step++;} // Else increment to next step
-  digitalWrite(LEDt[step], HIGH); // Turn current LED on
-
-  if(Track1[step].onOff) // If the current step is selected
-  {digitalWrite(LED_PIN7, HIGH);} // Then turn on indicator LED
-  else
-  {digitalWrite(LED_PIN7, LOW);} // Else turn it off
-  // NOTE - this is where the main action of the sequencer (eg sending that step to MIDI) will occur. Currently just placeholder LED.
 
 }
 
@@ -65,25 +65,19 @@ void IRAM_ATTR onTimer()
 void IRAM_ATTR intB1()
 {    
   Track1[0].onOff = !Track1[0].onOff; // Invert current onOff state
-    buttonFlag = 1; // Set flag so main loop knows to update button LEDs
 }
 void IRAM_ATTR intB2() // As above for button 2
 {
   Track1[1].onOff = !Track1[1].onOff;
-    buttonFlag = 1;
 }
 void IRAM_ATTR intB3() // As above for button 3
 {    
    Track1[2].onOff = !Track1[02].onOff;
-    buttonFlag = 1;
 }
 
 void setup() 
 {
-  timer = timerBegin(0, 80, true); // Timer no. (0) - Prescaler Value (1MHz (80Mhz clock / 80)) - Count UP (true). Will fire every uS
-  timerAttachInterrupt(timer, &onTimer, true); // Attaches 'onTimer' vector to timer interrupt. 'True' is edge, 'False' is level.
-  timerAlarmWrite(timer, 500000, true); // 500k value, given prescaler above, will fire every 0.5s. True reloads value after done.
-  timerAlarmEnable(timer); // Enable alarm
+  
 
 
 
@@ -95,19 +89,49 @@ void setup()
   pinMode(LED_PIN5, OUTPUT);
   pinMode(LED_PIN6, OUTPUT);
   pinMode(LED_PIN7, OUTPUT);
-  pinMode(BUT_PIN1, INPUT_PULLDOWN); // Buttons all input
-  pinMode(BUT_PIN2, INPUT_PULLUP);
+  pinMode(BUT_PIN1, INPUT); // Buttons all input
+  pinMode(BUT_PIN2, INPUT);
   pinMode(BUT_PIN3, INPUT);
 
   attachInterrupt(BUT_PIN1, intB1, HIGH); // Will call 'intB1' when button 1 is high
   attachInterrupt(BUT_PIN2, intB2, HIGH); // As above for button 2
   attachInterrupt(BUT_PIN3, intB3, HIGH); // As above for button 3
+  
+
+    // freeRTOS task creation
+  xTaskCreate(
+    stepCheck, // Function name
+    "Step Checker", // Name for debug
+    100, // Size on stack (bytes)
+    NULL, // Parameter passed to function (none used, but need to included)
+    1, // Task priority - 1 is LOWEST, 24 highest
+    &stepHandle // Point this to the task handle declared above
+  );
+
+  xTaskCreate(
+    timerTask, // Function name
+    "Timer Task", // Name for debug
+    100, // Size on stack (bytes)
+    NULL, // Parameter passed to function (none used, but need to included)
+    2, // Task priority - 1 is LOWEST, 24 highest
+    &timerHandle // 'Task Handle' ?
+  );
+
+  timer = timerBegin(0, 80, true); // Timer no. (0) - Prescaler Value (1MHz (80Mhz clock / 80)) - Count UP (true). Will fire every uS
+  timerAttachInterrupt(timer, &onTimer, true); // Attaches 'onTimer' vector to timer interrupt. 'True' is edge, 'False' is level.
+  timerAlarmWrite(timer, 500000, true); // 500k value, given prescaler above, will fire every 0.5s. True reloads value after done.
+  timerAlarmEnable(timer); // Enable alarm
+
 }
 
 void loop()
 {
-  if(buttonFlag) // If this flag is set, a button has been pressed since last loop
-  {              // Will run through each step to see if LED should be turned on
+}
+
+
+void stepCheck(void * parameter)
+{
+  for(;;){
     if(Track1[0].onOff) // If first step is on
     {digitalWrite(LED_PIN1, HIGH);} // Turn on its LED
     else
@@ -122,13 +146,21 @@ void loop()
     {digitalWrite(LED_PIN3, HIGH);}
     else
     {digitalWrite(LED_PIN3, LOW);}
-    
-    buttonFlag = 0; // Reset the flag
   }
-  /* NOTE - Probably better to have a flag for each individual button. One bool per button is minimal memory used, but much better performance.
-            Currently whenever a single button is pressed, every step is scanned through and every LED is written to either on or off.          */
 }
 
+void timerTask(void * parameter)
+{ 
+  for(;;){ 
+  if(step == 0)
+  {digitalWrite(LEDt[2], LOW);}
+  else
+  {digitalWrite(LEDt[step-1], LOW);} // Turn the previous LED off
+  digitalWrite(LEDt[step], HIGH); // Turn current LED on
 
-
-
+  if(Track1[step].onOff) // If the current step is selected
+  {digitalWrite(LED_PIN7, HIGH);} // Then turn on indicator LED
+  else
+  {digitalWrite(LED_PIN7, LOW);} // Else turn it off
+  }
+}
