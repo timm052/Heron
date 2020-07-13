@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <MIDI.h>
 
 hw_timer_t * timer = NULL;
 int stepSize = 2; // Current max steps of sequencer - will be changed by user. NOTE: size is this +1 (includes 0)
@@ -20,16 +21,16 @@ bool buttonFlag = 0; //Flag is set whenever a button is pressed - used for optim
 #define BUT_PIN3 15 // Button 3 """
 
 
-
+MIDI_CREATE_DEFAULT_INSTANCE();
 
 // Each step of a track is one of these objects
 class stepNote
 {
   public:
   bool onOff; //Note on/off - 1 on, 0 off
-  int8_t velocity; //Rest are unused - just filling space here
+  int8_t velocity = 120;
   int8_t aftertouch;
-  int8_t pitch;
+  int8_t pitch = 40;
 
 };
 
@@ -54,7 +55,10 @@ void IRAM_ATTR onTimer()
   digitalWrite(LEDt[step], HIGH); // Turn current LED on
 
   if(Track1[step].onOff) // If the current step is selected
-  {digitalWrite(LED_PIN7, HIGH);} // Then turn on indicator LED
+  {
+    digitalWrite(LED_PIN7, HIGH); // Then turn on indicator LED
+    MIDI.sendNoteOn(30, 110, 1);    // Send a Note (pitch, velocity, channel 1)
+  } 
   else
   {digitalWrite(LED_PIN7, LOW);} // Else turn it off
   // NOTE - this is where the main action of the sequencer (eg sending that step to MIDI) will occur. Currently just placeholder LED.
@@ -84,8 +88,10 @@ void setup()
   timerAttachInterrupt(timer, &onTimer, true); // Attaches 'onTimer' vector to timer interrupt. 'True' is edge, 'False' is level.
   timerAlarmWrite(timer, 500000, true); // 500k value, given prescaler above, will fire every 0.5s. True reloads value after done.
   timerAlarmEnable(timer); // Enable alarm
-
-
+  
+  Serial.begin(115200);
+  MIDI.begin(MIDI_CHANNEL_OMNI); //Start MIDI listen to all channels
+  MIDI.sendNoteOn(30, 110, 1);
 
   //Setup LED and button pins
   pinMode(LED_PIN1, OUTPUT); // LEDs all output
@@ -95,8 +101,8 @@ void setup()
   pinMode(LED_PIN5, OUTPUT);
   pinMode(LED_PIN6, OUTPUT);
   pinMode(LED_PIN7, OUTPUT);
-  pinMode(BUT_PIN1, INPUT_PULLDOWN); // Buttons all input
-  pinMode(BUT_PIN2, INPUT_PULLUP);
+  pinMode(BUT_PIN1, INPUT); // Buttons all input
+  pinMode(BUT_PIN2, INPUT);
   pinMode(BUT_PIN3, INPUT);
 
   attachInterrupt(BUT_PIN1, intB1, HIGH); // Will call 'intB1' when button 1 is high
@@ -106,6 +112,7 @@ void setup()
 
 void loop()
 {
+  MIDI.read();
   if(buttonFlag) // If this flag is set, a button has been pressed since last loop
   {              // Will run through each step to see if LED should be turned on
     if(Track1[0].onOff) // If first step is on
